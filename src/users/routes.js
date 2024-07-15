@@ -1,10 +1,10 @@
 const { Router } = require("express");
 const userRouter = Router();
 
-const { addUser, getUser, getAllUsers } = require("./controllers");
+const { signUp, getUser, getAllUsers } = require("./controllers");
 
 // POST route to add a user to DB //
-userRouter.post("/", addUser);
+userRouter.post("/", signUp);
 
 // GET route to read a user from DB by username //
 userRouter.get("/", getUser);

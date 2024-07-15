@@ -1,10 +1,12 @@
 const { req, request } = require("express");
 const User = require("./model");
 
-const addUser = async (req, res) => {
+const signUp = async (req, res) => {
   try {
     const user = await User.create(req.body);
-    res.status(201).json({ message: "success", user: user });
+    res
+      .status(201)
+      .json({ message: "You have signed up successfully", user: user });
   } catch (err) {
     res.status(501).json({ message: err.message, err: err });
   }
@@ -31,7 +33,7 @@ const getAllUsers = async (req, res) => {
 };
 
 module.exports = {
-  addUser,
+  signUp,
   getUser,
   getAllUsers,
 };
