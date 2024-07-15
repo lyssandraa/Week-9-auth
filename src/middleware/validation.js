@@ -10,15 +10,23 @@ const isData = async (req, res, next) => {
   }
 };
 
+// const isLowerCase = async (req, res, next) => {
+//   try {
+//     const isDataLowerCase = (data) => {
+//       return data === String(data).toLowerCase();
+//     };
+//     if (!isDataLowerCase(req.body.username)) {
+//       req.body.username = req.body.username.toLowerCase();
+//     }
+//     next();
+//   } catch (err) {
+//     res.status(500).json({ message: err.message, err: err });
+//   }
+// };
+
 const isLowerCase = async (req, res, next) => {
   try {
-    const isDataLowerCase = (data) => {
-      return data === String(data).toLowerCase();
-    };
-    if (!isDataLowerCase(req.body.username)) {
-      res.status(422).json({ message: "username must be in lowercase" });
-      return;
-    }
+    req.body.username = req.body.username.toLowerCase();
     next();
   } catch (err) {
     res.status(500).json({ message: err.message, err: err });
@@ -27,9 +35,9 @@ const isLowerCase = async (req, res, next) => {
 
 const isValidEmail = async (req, res, next) => {
   try {
-    const emailRegEx = /^[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,4}$/;
+    const regex = /^[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,4}$/;
 
-    if (!emailRegEx.test(req.body.email)) {
+    if (!regex.test(req.body.email)) {
       res.status(422).json({ message: "Invalid email format" });
       return;
     }
@@ -41,10 +49,10 @@ const isValidEmail = async (req, res, next) => {
 
 const isValidPassword = async (req, res, next) => {
   try {
-    const passwordRegEx =
+    const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,15}$/;
 
-    if (!passwordRegEx.test(req.body.password)) {
+    if (!regex.test(req.body.password)) {
       res.status(422).json({ message: "Invalid password" });
       return;
     }
