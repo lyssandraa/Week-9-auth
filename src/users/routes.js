@@ -9,11 +9,14 @@ const {
   updateInfo,
 } = require("./controllers");
 
-// POST route to add a user to DB //
-userRouter.post("/", signUp);
+const { hashPass, comparePass } = require("../middleware/auth");
+const { compare } = require("bcrypt");
 
-//
-userRouter.get("/logIn", logIn);
+// POST route to add a user to DB //
+userRouter.post("/", hashPass, signUp);
+
+// POST route to log in //
+userRouter.post("/logIn", comparePass, logIn);
 
 // GET route to read a user from DB by username //
 userRouter.get("/:username", getUser);
