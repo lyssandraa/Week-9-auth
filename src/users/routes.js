@@ -9,8 +9,10 @@ const {
   updateInfo,
 } = require("./controllers");
 
+const { hashPass } = require("../middleware/auth");
+
 // POST route to add a user to DB //
-userRouter.post("/", signUp);
+userRouter.post("/", hashPass, signUp);
 
 //
 userRouter.get("/logIn", logIn);
