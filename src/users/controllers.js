@@ -1,4 +1,5 @@
 const User = require("./model");
+const jwt = require("jsonwebtoken");
 
 const signUp = async (req, res) => {
   try {
@@ -14,10 +15,27 @@ const signUp = async (req, res) => {
 
 const logIn = async (req, res) => {
   try {
+    const token = await jwt.sign({ id: req.user.id }, process.env.SECRET);
+
+    const user = {
+      id: req.user.id,
+      username: req.user.username,
+      token: token,
+    };
+
     res.status(201).json({
       message: "You have logged in successfully",
-      username: req.user,
+      user,
     });
+  } catch (err) {
+    res.status(501).json({ message: err.message, err: err });
+  }
+};
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({});
+    res.status(200).json({ message: "success", users: users });
   } catch (err) {
     res.status(501).json({ message: err.message, err: err });
   }
@@ -29,15 +47,6 @@ const getUser = async (req, res) => {
       where: { username: req.params.username },
     });
     res.status(200).json({ message: "success", user: user });
-  } catch (err) {
-    res.status(501).json({ message: err.message, err: err });
-  }
-};
-
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.status(200).json({ message: "success", users: users });
   } catch (err) {
     res.status(501).json({ message: err.message, err: err });
   }
@@ -63,7 +72,7 @@ const updateInfo = async (req, res) => {
 module.exports = {
   signUp,
   logIn,
-  getUser,
   getAllUsers,
+  getUser,
   updateInfo,
 };

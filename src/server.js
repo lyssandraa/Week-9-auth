@@ -20,8 +20,8 @@ app.get("/health", (req, res) => {
   res.status(200).json({ message: "API is healthy" });
 });
 
-const syncTables = () => {
-  User.sync({ alter: true });
+const syncTables = async () => {
+  await User.sync({ alter: true });
 };
 
 app.listen(port, () => {

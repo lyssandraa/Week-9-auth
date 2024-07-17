@@ -1,25 +1,24 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../db/connection");
 
-const User = sequelize.define(
-  "User",
+const Book = sequelize.define(
+  "Book",
   {
-    username: {
+    title: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
     },
-    email: {
+    author: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
     },
-    password: {
+    genre: {
       type: DataTypes.STRING,
       allowNull: false,
     },
   },
-  { timestamps: false, indexed: [{ unique: true, fields: ["username"] }] }
+  { timestamps: false, indexed: [{ unique: true, fields: ["title"] }] }
 );
 
-module.exports = User;
+module.exports = Book;
