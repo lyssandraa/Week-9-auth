@@ -18,6 +18,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   { timestamps: false, indexed: [{ unique: true, fields: ["username"] }] }
 );

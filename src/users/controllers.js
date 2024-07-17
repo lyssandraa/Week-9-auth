@@ -1,5 +1,6 @@
 const User = require("./model");
 const jwt = require("jsonwebtoken");
+const { ValidationError } = require("sequelize");
 
 const signUp = async (req, res) => {
   try {
@@ -9,13 +10,19 @@ const signUp = async (req, res) => {
       username: user.username,
     });
   } catch (err) {
-    res.status(501).json({ message: err.message, err: err });
+    if (err instanceof ValidationError) {
+      res.status(400).json({ message: "Validation error", errors: err.errors });
+    } else {
+      res
+        .status(500)
+        .json({ message: "Internal server error", error: err.message });
+    }
   }
 };
 
 const logIn = async (req, res) => {
   try {
-    const token = await jwt.sign({ id: req.user.id }, process.env.SECRET);
+    const token = jwt.sign({ id: req.user.id }, process.env.SECRET);
 
     const user = {
       id: req.user.id,
@@ -28,7 +35,7 @@ const logIn = async (req, res) => {
       user,
     });
   } catch (err) {
-    res.status(501).json({ message: err.message, err: err });
+    res.status(500).json({ message: err.message, err: err });
   }
 };
 
@@ -57,15 +64,20 @@ const updateInfo = async (req, res) => {
     const filterObj = { username: req.body.username };
     const updateObj = { [req.body.updateKey]: req.body.updateValue };
 
-    await User.update(updateObj, {
+    const [updated] = await User.update(updateObj, {
       where: filterObj,
     });
 
-    const updatedInfo = await User.findOne({ where: filterObj });
-
-    res.status(200).json({ message: "success", updatedInfo: updatedInfo });
+    if (updated) {
+      const updatedInfo = await User.findOne({ where: filterObj });
+      res.status(200).json({ message: "success", updatedInfo: updatedInfo });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
   } catch (err) {
-    res.status(501).json({ message: err.message, err: err });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
   }
 };
 

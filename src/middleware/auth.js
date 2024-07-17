@@ -6,6 +6,28 @@ const jwt = require("jsonwebtoken");
 const { UnknownConstraintError } = require("sequelize");
 const secret = process.env.SECRET;
 
+const isValidData = async (req, res, next) => {
+  try {
+    const regexEmail = /^[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,4}$/;
+    const regexPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
+    req.body.username = req.body.username.toLowerCase();
+
+    if (!req.body.username) {
+      res.status(422).json({ message: "Please provide a valid username" });
+      return;
+    } else if (!regexEmail.test(req.body.email)) {
+      res.status(422).json({ message: "Invalid email format" });
+      return;
+    } else if (!regexPass.test(req.body.password)) {
+      res.status(422).json({ message: "Invalid password" });
+      return;
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({ message: err.message, err: err });
+  }
+};
+
 const hashPass = async (req, res, next) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
@@ -46,7 +68,7 @@ const verifyToken = async (req, res, next) => {
     const token = req.header("Authorization").replace("Bearer ", "");
 
     if (!token) {
-      return res.status(403).json({ message: "No token provided" });
+      return res.status(403).json({ message: "Token not provided" });
     }
 
     const authenticateToken = jwt.verify(token, secret);
@@ -60,8 +82,18 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+const authoriseAdmin = (req, res, next) => {
+  if (req.authCheck && req.authCheck.isAdmin) {
+    next();
+  } else {
+    res.status(403).json({ message: "Access denied. Admin only!" });
+  }
+};
+
 module.exports = {
+  isValidData,
   hashPass,
   comparePass,
   verifyToken,
+  authoriseAdmin,
 };
