@@ -17,6 +17,9 @@ const Book = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    description: {
+      type: DataTypes.STRING,
+    },
   },
   { timestamps: false, indexed: [{ unique: true, fields: ["title"] }] }
 );

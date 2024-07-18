@@ -7,7 +7,7 @@ const User = require("./users/model");
 
 const testRouter = require("./test/routes");
 const userRouter = require("./users/routes");
-// const bookRouter = require("./books/routes");
+const bookRouter = require("./books/routes");
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use("/test", testRouter);
 
 app.use("/users", userRouter);
 
-// app.use("/books", bookRouter);
+app.use("/books", bookRouter);
 
 app.get("/health", (req, res) => {
   res.status(200).json({ message: "API is healthy" });
@@ -25,7 +25,7 @@ app.get("/health", (req, res) => {
 
 const syncTables = async () => {
   await User.sync({ alter: true });
-  //   await Book.sync({ alter: true });
+  await Book.sync({ alter: true });
 };
 
 app.listen(port, () => {
