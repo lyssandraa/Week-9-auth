@@ -22,7 +22,10 @@ const { compare } = require("bcrypt");
 userRouter.post("/", isValidData, hashPass, signUp);
 
 // POST route to log in //
-userRouter.post("/logIn", comparePass, logIn);
+userRouter.post("/login", comparePass, logIn);
+
+// POST route for persistent log in //
+userRouter.post("/persistentLogin", verifyToken, logIn);
 
 // GET route to read all users from DB //
 userRouter.get("/getAllUsers", verifyToken, authoriseAdmin, getAllUsers);

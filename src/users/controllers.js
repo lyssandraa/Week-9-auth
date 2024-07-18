@@ -22,12 +22,16 @@ const signUp = async (req, res) => {
 
 const logIn = async (req, res) => {
   try {
-    const token = jwt.sign({ id: req.user.id }, process.env.SECRET);
+    if (req.authCheck) {
+      return res.status(201).json({ message: "success", user: req.authCheck });
+    }
+
+    const accessToken = await jwt.sign({ id: req.user.id }, process.env.SECRET);
 
     const user = {
       id: req.user.id,
       username: req.user.username,
-      token: token,
+      token: accessToken,
     };
 
     res.status(201).json({
@@ -36,6 +40,14 @@ const logIn = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message, err: err });
+  }
+};
+
+const refreshAccessToken = async (req, res) => {
+  try {
+    const refreshToken = req.body.refreshToken;
+  } catch (err) {
+    res.status(403).json({ message: err.message, err });
   }
 };
 

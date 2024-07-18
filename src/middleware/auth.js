@@ -5,11 +5,12 @@ const saltRounds = parseInt(process.env.SALT_ROUNDS);
 const jwt = require("jsonwebtoken");
 const { UnknownConstraintError } = require("sequelize");
 const secret = process.env.SECRET;
+const refreshSecret = process.env.REFRESH_SECRET;
 
 const isValidData = async (req, res, next) => {
   try {
     const regexEmail = /^[a-zA-Z0–9._-]+@[a-zA-Z0–9.-]+\.[a-zA-Z]{2,4}$/;
-    const regexPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/;
+    const regexPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{3,20}$/;
     req.body.username = req.body.username.toLowerCase();
 
     if (!req.body.username) {
@@ -71,9 +72,38 @@ const verifyToken = async (req, res, next) => {
       return res.status(403).json({ message: "Token not provided" });
     }
 
-    const authenticateToken = jwt.verify(token, secret);
+    const authenticateToken = await jwt.verify(token, secret);
 
-    const user = await User.findOne({ where: { id: authenticateToken.id } });
+    const user = {
+      id: authenticateToken.id,
+      username: req.body.username,
+      token: token,
+    };
+
+    req.authCheck = user;
+    next();
+  } catch (err) {
+    res.status(403).json({ message: err.message, err });
+  }
+};
+
+const verifyRefreshToken = async (req, res, next) => {
+  try {
+    const refreshToken = req.body.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(403).json({ message: "Token not provided" });
+    }
+
+    const authRefreshToken = jwt.verify(refreshToken, refreshSecret);
+
+    const user = await User.findOne({
+      where: { id: authRefreshToken.id, refreshToken: refreshToken },
+    });
+
+    if (!user) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
 
     req.authCheck = user;
     next();
@@ -95,5 +125,6 @@ module.exports = {
   hashPass,
   comparePass,
   verifyToken,
+  verifyRefreshToken,
   authoriseAdmin,
 };
