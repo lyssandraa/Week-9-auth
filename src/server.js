@@ -4,6 +4,7 @@ const express = require("express");
 const port = process.env.PORT || 5001;
 
 const User = require("./users/model");
+const Book = require("./books/model");
 
 const testRouter = require("./test/routes");
 const userRouter = require("./users/routes");
