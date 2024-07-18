@@ -74,37 +74,10 @@ const verifyToken = async (req, res, next) => {
 
     const authenticateToken = await jwt.verify(token, secret);
 
-    const user = {
-      id: authenticateToken.id,
-      username: req.body.username,
-      token: token,
-    };
-
-    req.authCheck = user;
-    next();
-  } catch (err) {
-    res.status(403).json({ message: err.message, err });
-  }
-};
-
-const verifyRefreshToken = async (req, res, next) => {
-  try {
-    const refreshToken = req.body.refreshToken;
-
-    if (!refreshToken) {
-      return res.status(403).json({ message: "Token not provided" });
-    }
-
-    const authRefreshToken = jwt.verify(refreshToken, refreshSecret);
-
     const user = await User.findOne({
-      where: { id: authRefreshToken.id, refreshToken: refreshToken },
+      where: { id: authenticateToken.id },
     });
 
-    if (!user) {
-      return res.status(403).json({ message: "Invalid refresh token" });
-    }
-
     req.authCheck = user;
     next();
   } catch (err) {
@@ -112,12 +85,16 @@ const verifyRefreshToken = async (req, res, next) => {
   }
 };
 
-const authoriseAdmin = (req, res, next) => {
-  if (req.authCheck && req.authCheck.isAdmin) {
+const verifyRole = (requiredRole) => {
+  return (req, res, next) => {
+    if (!req.authCheck || req.authCheck.role !== requiredRole) {
+      res
+        .status(401)
+        .json({ message: "Access forbidden: Insufficient privileges" });
+      return;
+    }
     next();
-  } else {
-    res.status(403).json({ message: "Access denied. Admin only!" });
-  }
+  };
 };
 
 module.exports = {
@@ -125,6 +102,5 @@ module.exports = {
   hashPass,
   comparePass,
   verifyToken,
-  verifyRefreshToken,
-  authoriseAdmin,
+  verifyRole,
 };

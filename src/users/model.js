@@ -18,9 +18,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    role: {
+      type: DataTypes.ENUM,
+      values: ["admin", "basic"],
+      defaultValue: "basic",
     },
   },
   { timestamps: false, indexed: [{ unique: true, fields: ["username"] }] }
