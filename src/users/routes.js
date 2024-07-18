@@ -14,7 +14,7 @@ const {
   hashPass,
   comparePass,
   verifyToken,
-  authoriseAdmin,
+  verifyRole,
 } = require("../middleware/auth");
 const { compare } = require("bcrypt");
 
@@ -28,7 +28,7 @@ userRouter.post("/login", comparePass, logIn);
 userRouter.post("/persistentLogin", verifyToken, logIn);
 
 // GET route to read all users from DB //
-userRouter.get("/getAllUsers", verifyToken, authoriseAdmin, getAllUsers);
+userRouter.get("/getAllUsers", verifyToken, verifyRole("admin"), getAllUsers);
 
 // GET route to read a user from DB by username //
 userRouter.get("/:username", getUser);
