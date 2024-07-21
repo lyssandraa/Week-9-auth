@@ -14,10 +14,10 @@ const addBook = async (req, res) => {
   }
 };
 
-const getBook = async (req, res) => {
+const getBooksByUser = async (req, res) => {
   try {
-    const book = await Book.findOne({ where: { title: req.params.title } });
-    res.status(200).json({ message: "success", book: book });
+    const books = await Book.findAll({ where: { userId: req.params.userId } });
+    res.status(200).json({ message: "success", books: books });
   } catch (err) {
     res.status(501).json({ message: err.message, err: err });
   }
@@ -25,5 +25,5 @@ const getBook = async (req, res) => {
 
 module.exports = {
   addBook,
-  getBook,
+  getBooksByUser,
 };

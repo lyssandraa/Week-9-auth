@@ -14,13 +14,9 @@ const bookRouter = require("./books/routes");
 const app = express();
 
 app.use(cors());
-
 app.use(express.json());
-
 app.use("/test", testRouter);
-
 app.use("/users", userRouter);
-
 app.use("/books", bookRouter);
 
 app.get("/health", (req, res) => {
@@ -28,8 +24,8 @@ app.get("/health", (req, res) => {
 });
 
 const syncTables = async () => {
-  await User.hasMany(Book, { foreignKey: "userId" });
-  await Book.belongsTo(User, { foreignKey: "userId" });
+  User.hasMany(Book, { foreignKey: "userId" });
+  Book.belongsTo(User, { foreignKey: "userId" });
 
   await User.sync({ alter: true });
   await Book.sync({ alter: true });
