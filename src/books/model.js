@@ -1,12 +1,12 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../db/connection");
+const User = require("../users/model");
 
 const Book = sequelize.define(
   "Book",
   {
     title: {
       type: DataTypes.STRING,
-      unique: true,
       allowNull: false,
     },
     author: {
@@ -17,11 +17,15 @@ const Book = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    description: {
-      type: DataTypes.STRING,
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: "id",
+      },
     },
   },
-  { timestamps: false, indexed: [{ unique: true, fields: ["title"] }] }
+  { timestamps: false }
 );
 
 module.exports = Book;
