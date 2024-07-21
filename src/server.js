@@ -28,6 +28,9 @@ app.get("/health", (req, res) => {
 });
 
 const syncTables = async () => {
+  await User.hasMany(Book, { foreignKey: "userId" });
+  await Book.belongsTo(User, { foreignKey: "userId" });
+
   await User.sync({ alter: true });
   await Book.sync({ alter: true });
 };
