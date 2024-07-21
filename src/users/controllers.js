@@ -34,6 +34,7 @@ const logIn = async (req, res) => {
       id: req.user.id,
       username: req.user.username,
       token: accessToken,
+      role: req.user.role,
     };
 
     res.status(201).json({
